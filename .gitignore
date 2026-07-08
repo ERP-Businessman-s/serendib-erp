@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+build/
+client/dist/
+**/dist/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Azure
+.azure/
+
+# Misc
+*.local
+coverage/
