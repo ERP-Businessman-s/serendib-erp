@@ -1,6 +1,8 @@
 -- Serendib Gems ERP - database schema (Azure SQL / T-SQL)
 -- Run this first, then seed.sql.
--- Safe to re-run: it drops the tables in the right order, then creates them again.
+-- This whole file runs as one batch (no GO), so you can paste it straight into
+-- the Azure Portal "Query editor". Safe to re-run: it drops the tables in the
+-- right order, then creates them again.
 
 -- ---------- drop (children first, so foreign keys do not block) ----------
 IF OBJECT_ID('dbo.Payments','U')     IS NOT NULL DROP TABLE dbo.Payments;
@@ -14,7 +16,6 @@ IF OBJECT_ID('dbo.Customers','U')    IS NOT NULL DROP TABLE dbo.Customers;
 IF OBJECT_ID('dbo.Employees','U')    IS NOT NULL DROP TABLE dbo.Employees;
 IF OBJECT_ID('dbo.Suppliers','U')    IS NOT NULL DROP TABLE dbo.Suppliers;
 IF OBJECT_ID('dbo.Users','U')        IS NOT NULL DROP TABLE dbo.Users;
-GO
 
 -- ---------- Users (login accounts) ----------
 CREATE TABLE dbo.Users (
@@ -25,7 +26,6 @@ CREATE TABLE dbo.Users (
   role           NVARCHAR(30)  NOT NULL DEFAULT 'Admin',
   created_at     DATETIME      NOT NULL DEFAULT GETDATE()
 );
-GO
 
 -- ---------- Suppliers ----------
 CREATE TABLE dbo.Suppliers (
@@ -35,7 +35,6 @@ CREATE TABLE dbo.Suppliers (
   country      NVARCHAR(80)  NULL,
   created_at   DATETIME      NOT NULL DEFAULT GETDATE()
 );
-GO
 
 -- ---------- Employees (staff, including cutters) ----------
 CREATE TABLE dbo.Employees (
@@ -46,7 +45,6 @@ CREATE TABLE dbo.Employees (
   is_cutter    BIT           NOT NULL DEFAULT 0,
   join_date    DATE          NULL
 );
-GO
 
 -- ---------- Customers ----------
 CREATE TABLE dbo.Customers (
@@ -57,7 +55,6 @@ CREATE TABLE dbo.Customers (
   address      NVARCHAR(255) NULL,
   created_at   DATETIME      NOT NULL DEFAULT GETDATE()
 );
-GO
 
 -- ---------- Purchases (a buy from a supplier) ----------
 CREATE TABLE dbo.Purchases (
@@ -69,7 +66,6 @@ CREATE TABLE dbo.Purchases (
   created_at     DATETIME      NOT NULL DEFAULT GETDATE(),
   CONSTRAINT FK_Purchases_Supplier FOREIGN KEY (supplier_id) REFERENCES dbo.Suppliers(supplier_id)
 );
-GO
 
 -- ---------- Lots (the central table: one row is one gemstone) ----------
 CREATE TABLE dbo.Lots (
@@ -96,7 +92,6 @@ CREATE TABLE dbo.Lots (
   CONSTRAINT FK_Lots_Supplier FOREIGN KEY (supplier_id) REFERENCES dbo.Suppliers(supplier_id),
   CONSTRAINT FK_Lots_Purchase FOREIGN KEY (purchase_id) REFERENCES dbo.Purchases(purchase_id)
 );
-GO
 
 -- ---------- CuttingJobs (rough lot -> finished lot) ----------
 CREATE TABLE dbo.CuttingJobs (
@@ -110,7 +105,6 @@ CREATE TABLE dbo.CuttingJobs (
   CONSTRAINT FK_Cutting_Lot    FOREIGN KEY (lot_id)    REFERENCES dbo.Lots(lot_id),
   CONSTRAINT FK_Cutting_Cutter FOREIGN KEY (cutter_id) REFERENCES dbo.Employees(employee_id)
 );
-GO
 
 -- ---------- Orders ----------
 CREATE TABLE dbo.Orders (
@@ -123,7 +117,6 @@ CREATE TABLE dbo.Orders (
   created_at    DATETIME NOT NULL DEFAULT GETDATE(),
   CONSTRAINT FK_Orders_Customer FOREIGN KEY (customer_id) REFERENCES dbo.Customers(customer_id)
 );
-GO
 
 -- ---------- OrderItems (the lots inside an order) ----------
 CREATE TABLE dbo.OrderItems (
@@ -134,7 +127,6 @@ CREATE TABLE dbo.OrderItems (
   CONSTRAINT FK_OrderItems_Order FOREIGN KEY (order_id) REFERENCES dbo.Orders(order_id),
   CONSTRAINT FK_OrderItems_Lot   FOREIGN KEY (lot_id)   REFERENCES dbo.Lots(lot_id)
 );
-GO
 
 -- ---------- Invoices ----------
 CREATE TABLE dbo.Invoices (
@@ -145,7 +137,6 @@ CREATE TABLE dbo.Invoices (
   status        NVARCHAR(20) NOT NULL DEFAULT 'Unpaid',
   CONSTRAINT FK_Invoices_Order FOREIGN KEY (order_id) REFERENCES dbo.Orders(order_id)
 );
-GO
 
 -- ---------- Payments ----------
 CREATE TABLE dbo.Payments (
@@ -156,4 +147,3 @@ CREATE TABLE dbo.Payments (
   method        NVARCHAR(30) NOT NULL DEFAULT 'Cash',
   CONSTRAINT FK_Payments_Invoice FOREIGN KEY (invoice_id) REFERENCES dbo.Invoices(invoice_id)
 );
-GO
