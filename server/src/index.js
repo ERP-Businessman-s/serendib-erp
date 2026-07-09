@@ -17,8 +17,12 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/lots', require('./routes/lots'));           // Inventory
 app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/suppliers', require('./routes/suppliers')); // Procurement
-app.use('/api/customers', require('./routes/customers')); // Sales
+app.use('/api/suppliers', require('./routes/suppliers')); // Procurement (suppliers)
+app.use('/api/purchases', require('./routes/purchases')); // Procurement (purchases -> rough lots)
+app.use('/api/cutting', require('./routes/cutting'));     // Cutting & Workshop
+app.use('/api/customers', require('./routes/customers')); // Sales (customers)
+app.use('/api/orders', require('./routes/orders'));       // Sales (orders -> reserve/sell)
+app.use('/api/invoices', require('./routes/invoices'));   // Billing
 app.use('/api/employees', require('./routes/employees')); // HR
 
 // Simple health check
