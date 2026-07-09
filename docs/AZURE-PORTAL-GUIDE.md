@@ -65,7 +65,7 @@ Write down your server name now. It looks like `serendib-sql-<yourname>.database
    - Resource group: pick the same `serendib-erp-rg`.
    - Name: something unique, for example `serendib-erp-<yourname>`. This becomes your public URL: `https://serendib-erp-<yourname>.azurewebsites.net`.
    - Publish: **Code**.
-   - Runtime stack: **Node 20 LTS**.
+   - Runtime stack: **Node 22 LTS**. (If the list only shows Node 22 and Node 24, pick **Node 22**. The app works on Node 18 or later.)
    - Operating System: **Linux**.
    - Region: same region as the database.
    - Pricing plan: click it and choose the **Free F1** plan.
@@ -74,6 +74,8 @@ Write down your server name now. It looks like `serendib-sql-<yourname>.database
 ---
 
 ## Part 4: Add the settings (environment variables)
+
+> Security note: set these only here, in the App Service. Never write the real password, JWT secret, or admin password into any file in the GitHub repo, because this repo is public. The table below uses example placeholders on purpose. Use the real values your team lead gives you privately.
 
 1. On the App Service page, left menu, open **Settings > Environment variables** (older portals call it **Configuration > Application settings**).
 2. Add these one by one (click **Add** for each), using YOUR database values:
