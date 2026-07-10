@@ -30,12 +30,13 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div className="card pad" style={{ width: '100%', maxWidth: 400 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'radial-gradient(1100px 460px at 50% -8%, rgba(46,63,143,.16), transparent), linear-gradient(180deg,#fbfaf6,#efece2)' }}>
+      <div className="card pad" style={{ width: '100%', maxWidth: 400, boxShadow: '0 30px 80px -46px rgba(30,45,110,.55)' }}>
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
           <Gem width={38} height={38} style={{ color: 'var(--gold)' }} />
           <h1 style={{ fontSize: 30, marginTop: 10 }}>Serendib Gems</h1>
           <div style={{ fontSize: 10.5, letterSpacing: '.22em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 700, marginTop: 4 }}>ERP System</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 12 }}>Staff sign in to the back-office system</div>
         </div>
 
         {error && <div className="msg err">{error}</div>}

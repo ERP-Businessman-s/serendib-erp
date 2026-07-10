@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
-import { Plus, Edit, Trash, Close } from '../icons.jsx';
+import { Plus, Edit, Trash, Close, Search } from '../icons.jsx';
 
 // A reusable list + add/edit + delete page for a simple table.
 // Props:
@@ -12,6 +12,8 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(null);
+  const [q, setQ] = useState('');
+  const [confirmRow, setConfirmRow] = useState(null);
 
   const empty = () => Object.fromEntries(fields.map((f) => [f.key, '']));
 
@@ -34,13 +36,17 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
     } catch (e) { setError(e.message); }
   }
 
-  async function remove(row) {
-    if (!window.confirm('Delete this record?')) return;
-    try { await api.del(`${endpoint}/${row[idKey]}`); load(); }
-    catch (e) { setError(e.message); }
+  function remove(row) { setError(''); setConfirmRow(row); }
+  async function doRemove(row) {
+    try { await api.del(`${endpoint}/${row[idKey]}`); setConfirmRow(null); load(); }
+    catch (e) { setError(e.message); setConfirmRow(null); }
   }
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const shown = q.trim()
+    ? rows.filter((r) => columns.some((c) => String(r[c.key] ?? '').toLowerCase().includes(q.trim().toLowerCase())))
+    : rows;
 
   return (
     <div>
@@ -52,6 +58,11 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
       {error && <div className="msg err">{error}</div>}
 
       <div className="toolbar">
+        <div style={{ position: 'relative' }}>
+          <Search width={15} height={15} style={{ position: 'absolute', left: 10, top: 10, color: 'var(--muted)' }} />
+          <input className="input" style={{ paddingLeft: 32, width: 220 }} placeholder="Search"
+            value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
         <div className="spacer" />
         <button className="btn btn-primary" onClick={() => setForm(empty())}><Plus width={16} height={16} /> Add new</button>
       </div>
@@ -62,7 +73,7 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
             <tr>{columns.map((c) => <th key={c.key}>{c.label}</th>)}<th></th></tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {shown.map((r) => (
               <tr key={r[idKey]}>
                 {columns.map((c) => <td key={c.key}>{c.format ? c.format(r[c.key], r) : (r[c.key] ?? '-')}</td>)}
                 <td>
@@ -73,8 +84,8 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
                 </td>
               </tr>
             ))}
-            {!loading && rows.length === 0 && (
-              <tr><td colSpan={columns.length + 1}><div className="empty">No records yet. Add one to get started.</div></td></tr>
+            {!loading && shown.length === 0 && (
+              <tr><td colSpan={columns.length + 1}><div className="empty">{q.trim() ? 'No records match your search.' : 'No records yet. Add one to get started.'}</div></td></tr>
             )}
           </tbody>
         </table>
@@ -108,6 +119,20 @@ export default function SimpleModule({ title, subtitle, endpoint, idKey, columns
               <button type="submit" className="btn btn-primary">{form[idKey] ? 'Save changes' : 'Add'}</button>
             </div>
           </form>
+        </div>
+      )}
+
+      {confirmRow && (
+        <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && setConfirmRow(null)}>
+          <div className="modal" style={{ maxWidth: 400 }}>
+            <div className="modal-head"><h3>Delete record</h3>
+              <button type="button" className="iconbtn" onClick={() => setConfirmRow(null)}><Close width={16} height={16} /></button></div>
+            <div className="modal-body"><p style={{ margin: 0, color: 'var(--ink-soft)' }}>Delete this record? This cannot be undone.</p></div>
+            <div className="modal-foot">
+              <button className="btn" onClick={() => setConfirmRow(null)}>Cancel</button>
+              <button className="btn btn-danger" onClick={() => doRemove(confirmRow)}>Delete</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

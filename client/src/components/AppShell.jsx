@@ -1,20 +1,27 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
-import { Gem, Dash, Box, Truck, Chisel, Sale, Money, Users, Logout } from '../icons.jsx';
+import { Gem, Dash, Box, Truck, Chisel, Sale, Money, Users, Logout, Flow, Report } from '../icons.jsx';
 
+// `erp` is the standard ERP module category each screen maps to (Lesson 11:
+// SCM, CRM, Finance, HCM, BI). Shown as a small tag in the sidebar.
 const NAV = [
-  { to: '/', label: 'Dashboard', Icon: Dash, end: true },
+  { to: '/', label: 'Dashboard', Icon: Dash, end: true, erp: 'BI' },
+  { to: '/process', label: 'Process Flow', Icon: Flow, erp: 'BPM' },
+  { to: '/reports', label: 'Reports', Icon: Report, erp: 'BI' },
   { section: 'Modules' },
-  { to: '/inventory', label: 'Inventory', Icon: Box },
-  { to: '/procurement', label: 'Procurement', Icon: Truck },
-  { to: '/cutting', label: 'Cutting & Workshop', Icon: Chisel },
-  { to: '/sales', label: 'Sales', Icon: Sale },
-  { to: '/billing', label: 'Billing', Icon: Money },
-  { to: '/hr', label: 'HR & Staff', Icon: Users },
+  { to: '/inventory', label: 'Inventory', Icon: Box, erp: 'SCM' },
+  { to: '/procurement', label: 'Procurement', Icon: Truck, erp: 'SCM' },
+  { to: '/cutting', label: 'Cutting & Workshop', Icon: Chisel, erp: 'SCM' },
+  { to: '/sales', label: 'Sales', Icon: Sale, erp: 'CRM' },
+  { to: '/billing', label: 'Billing', Icon: Money, erp: 'Finance' },
+  { to: '/hr', label: 'HR & Staff', Icon: Users, erp: 'HCM' },
 ];
 
 export default function AppShell() {
   const { user, signOut } = useAuth();
+  const loc = useLocation();
+  const active = NAV.find((n) => n.to && n.to !== '/' && loc.pathname.startsWith(n.to)) || NAV[0];
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
     <div className="shell">
@@ -36,6 +43,7 @@ export default function AppShell() {
               <span className="dot" />
               <item.Icon width={17} height={17} />
               <span>{item.label}</span>
+              {item.erp && <span className="erp-tag">{item.erp}</span>}
             </NavLink>
           )
         )}
@@ -49,6 +57,10 @@ export default function AppShell() {
       </aside>
 
       <div className="main">
+        <div className="topbar">
+          <div className="crumb"><span className="crumb-root">Serendib Gems</span><span className="crumb-sep">/</span><span>{active.label}</span></div>
+          <div className="who"><span className="tab-num">{today}</span><span className="crumb-sep">·</span>Signed in as <strong style={{ color: 'var(--ink)' }}>{user?.name}</strong></div>
+        </div>
         <div className="content">
           <Outlet />
         </div>

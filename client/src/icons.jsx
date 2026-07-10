@@ -15,3 +15,7 @@ export const Edit = (p) => (<svg {...s} {...p}><path d="M12 20h9"/><path d="M16.
 export const Trash = (p) => (<svg {...s} {...p}><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>);
 export const Search = (p) => (<svg {...s} {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>);
 export const Close = (p) => (<svg {...s} {...p}><path d="M6 6l12 12M18 6 6 18"/></svg>);
+export const Clock = (p) => (<svg {...s} {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>);
+export const Printer = (p) => (<svg {...s} {...p}><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>);
+export const Flow = (p) => (<svg {...s} {...p}><rect x="3" y="4" width="6" height="5" rx="1"/><rect x="15" y="15" width="6" height="5" rx="1"/><path d="M6 9v4a2 2 0 0 0 2 2h7"/></svg>);
+export const Report = (p) => (<svg {...s} {...p}><path d="M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 12h6M8 16h4"/></svg>);

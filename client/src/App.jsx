@@ -3,6 +3,8 @@ import { useAuth } from './auth.jsx';
 import AppShell from './components/AppShell.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import ProcessFlow from './pages/ProcessFlow.jsx';
+import Reports from './pages/Reports.jsx';
 import Inventory from './pages/Inventory.jsx';
 import Procurement from './pages/Procurement.jsx';
 import Cutting from './pages/Cutting.jsx';
@@ -24,6 +26,8 @@ export default function App() {
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/process" element={<ProcessFlow />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/procurement" element={<Procurement />} />
           <Route path="/cutting" element={<Cutting />} />
