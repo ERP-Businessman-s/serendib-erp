@@ -37,6 +37,53 @@ router.get('/report/summary', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/invoices/report/monthly -> sales and money received per month (last 6).
+router.get('/report/monthly', async (req, res, next) => {
+  try {
+    const pool = await getPool();
+    const r = await pool.request().query(`
+      SELECT ym,
+             ISNULL(SUM(sales), 0)    AS sales,
+             ISNULL(SUM(received), 0) AS received
+      FROM (
+        SELECT FORMAT(invoice_date, 'yyyy-MM') AS ym, amount AS sales, 0 AS received
+        FROM dbo.Invoices
+        WHERE invoice_date >= DATEADD(MONTH, -5, CAST(GETDATE() AS DATE))
+        UNION ALL
+        SELECT FORMAT(payment_date, 'yyyy-MM') AS ym, 0 AS sales, amount AS received
+        FROM dbo.Payments
+        WHERE payment_date >= DATEADD(MONTH, -5, CAST(GETDATE() AS DATE))
+      ) x
+      GROUP BY ym ORDER BY ym`);
+    res.json(r.recordset);
+  } catch (err) { next(err); }
+});
+
+// GET /api/invoices/:id -> one invoice with its customer and the lots on it,
+// used for the printable invoice view.
+router.get('/:id', async (req, res, next) => {
+  try {
+    const pool = await getPool();
+    const head = await pool.request().input('id', sql.Int, req.params.id).query(`
+      SELECT i.*, o.order_id, o.order_date, o.channel,
+             c.name AS customer_name, c.email AS customer_email,
+             c.phone AS customer_phone, c.address AS customer_address,
+             (SELECT ISNULL(SUM(amount),0) FROM dbo.Payments p WHERE p.invoice_id = i.invoice_id) AS paid
+      FROM dbo.Invoices i
+      JOIN dbo.Orders o ON o.order_id = i.order_id
+      JOIN dbo.Customers c ON c.customer_id = o.customer_id
+      WHERE i.invoice_id = @id`);
+    if (!head.recordset[0]) return res.status(404).json({ error: 'Invoice not found' });
+    const items = await pool.request().input('id', sql.Int, req.params.id).query(`
+      SELECT oi.price, l.lot_code, l.name AS lot_name, l.gem_type, l.carat, l.origin
+      FROM dbo.Invoices i
+      JOIN dbo.OrderItems oi ON oi.order_id = i.order_id
+      JOIN dbo.Lots l ON l.lot_id = oi.lot_id
+      WHERE i.invoice_id = @id`);
+    res.json({ ...head.recordset[0], items: items.recordset });
+  } catch (err) { next(err); }
+});
+
 // POST /api/invoices/:id/payments  { amount, method }
 // Records a payment and updates the invoice status (Paid / Partly Paid).
 router.post('/:id/payments', async (req, res, next) => {
