@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
-import { Plus, Edit, Trash, Search, Close } from '../icons.jsx';
+import { Plus, Edit, Trash, Search, Close, Clock } from '../icons.jsx';
+
+// each module gets a small colour so the timeline reads at a glance
+const MODULE_TINT = {
+  Procurement: 'var(--gold)', Inventory: 'var(--navy)', Cutting: '#8a6bc4', Sales: '#2f9e70',
+};
 
 const STATUSES = ['In Stock (rough)', 'In Cutting', 'In Stock (finished)', 'Reserved', 'Sold'];
+
+const fmtDate = (d) => { if (!d) return ''; const t = new Date(String(d).slice(0, 10)); return isNaN(t) ? String(d).slice(0, 10) : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
 
 // maps a status to a badge colour class
 function badgeClass(status) {
@@ -25,6 +32,8 @@ export default function Inventory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [form, setForm] = useState(null); // null = modal closed
+  const [history, setHistory] = useState(null); // null = drawer closed
+  const [confirmLot, setConfirmLot] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -59,9 +68,15 @@ export default function Inventory() {
     } catch (e) { setError(e.message); }
   }
 
-  async function remove(lot) {
-    if (!window.confirm(`Delete ${lot.lot_code} (${lot.name})?`)) return;
-    try { await api.del('/lots/' + lot.lot_id); load(); }
+  function remove(lot) { setError(''); setConfirmLot(lot); }
+  async function doRemove(lot) {
+    try { await api.del('/lots/' + lot.lot_id); setConfirmLot(null); load(); }
+    catch (e) { setError(e.message); setConfirmLot(null); }
+  }
+
+  async function openHistory(lot) {
+    setError('');
+    try { setHistory(await api.get('/lots/' + lot.lot_id + '/history')); }
     catch (e) { setError(e.message); }
   }
 
@@ -111,6 +126,7 @@ export default function Inventory() {
                 <td className="tab-num">{l.sale_price ? 'Rs ' + Number(l.sale_price).toLocaleString() : '-'}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                    <button className="iconbtn" title="History" onClick={() => openHistory(l)}><Clock width={15} height={15} /></button>
                     <button className="iconbtn" title="Edit" onClick={() => setForm({ ...l })}><Edit width={15} height={15} /></button>
                     <button className="iconbtn" title="Delete" onClick={() => remove(l)}><Trash width={15} height={15} /></button>
                   </div>
@@ -167,6 +183,58 @@ export default function Inventory() {
               <button type="submit" className="btn btn-primary">{form.lot_id ? 'Save changes' : 'Add lot'}</button>
             </div>
           </form>
+        </div>
+      )}
+
+      {history && (
+        <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && setHistory(null)}>
+          <div className="modal" style={{ maxWidth: 520 }}>
+            <div className="modal-head">
+              <h3>History · {history.lot.lot_code} <span style={{ color: 'var(--muted)', fontWeight: 400 }}>{history.lot.name}</span></h3>
+              <button type="button" className="iconbtn" onClick={() => setHistory(null)}><Close width={16} height={16} /></button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 0 }}>Every step below was written by a different module, all against the same lot record.</p>
+              <div style={{ position: 'relative', paddingLeft: 6 }}>
+                {history.events.map((ev, i) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '14px 1fr', gap: 12, paddingBottom: 16, position: 'relative' }}>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ display: 'block', width: 11, height: 11, borderRadius: 999, background: MODULE_TINT[ev.module] || 'var(--navy)', marginTop: 3 }} />
+                      {i < history.events.length - 1 && <span style={{ position: 'absolute', left: 5, top: 15, bottom: -16, width: 2, background: 'var(--line)' }} />}
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                        <strong style={{ color: 'var(--ink)' }}>{ev.title}</strong>
+                        <span className="tab-num" style={{ fontSize: 12, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{fmtDate(ev.date)}</span>
+                      </div>
+                      <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>
+                        <span style={{ color: MODULE_TINT[ev.module] || 'var(--navy)', fontWeight: 600 }}>{ev.module}</span>
+                        {ev.detail ? ' · ' + ev.detail : ''}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {history.events.length === 0 && <div className="empty">No history yet for this lot.</div>}
+              </div>
+            </div>
+            <div className="modal-foot">
+              <button type="button" className="btn" onClick={() => setHistory(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmLot && (
+        <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && setConfirmLot(null)}>
+          <div className="modal" style={{ maxWidth: 400 }}>
+            <div className="modal-head"><h3>Delete lot</h3>
+              <button type="button" className="iconbtn" onClick={() => setConfirmLot(null)}><Close width={16} height={16} /></button></div>
+            <div className="modal-body"><p style={{ margin: 0, color: 'var(--ink-soft)' }}>Delete <strong>{confirmLot.lot_code}</strong> ({confirmLot.name})? This cannot be undone.</p></div>
+            <div className="modal-foot">
+              <button className="btn" onClick={() => setConfirmLot(null)}>Cancel</button>
+              <button className="btn btn-danger" onClick={() => doRemove(confirmLot)}>Delete lot</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
