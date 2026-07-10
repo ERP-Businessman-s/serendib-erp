@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serendib Gems — Ceylon Fine Gemstones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --navy:#1E2D6E; --navy-2:#2a3d8f; --gold:#B08D3E; --gold-2:#c9a24f; --ivory:#FBFAF6;
+      --ink:#1b2233; --ink-soft:#3d4457; --muted:#7a8091; --line:#e7e4dc; --line-soft:#efece5;
+      --card:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--ivory);color:var(--ink);font-family:'Manrope',-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.55}
+    a{color:inherit;text-decoration:none}
+    .serif{font-family:'Cormorant Garamond',Georgia,serif}
+    .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+    .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600}
+
+    header{position:sticky;top:0;z-index:40;background:rgba(251,250,246,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .bar{display:flex;align-items:center;justify-content:space-between;height:70px;gap:18px}
+    .brand{font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:700;color:var(--navy);letter-spacing:.5px;line-height:1}
+    .brand small{display:block;font-family:'Manrope',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:-2px}
+    nav.links{display:flex;gap:26px;margin-left:auto;margin-right:8px}
+    nav.links a{font-size:14px;font-weight:600;color:var(--ink-soft);transition:.15s}
+    nav.links a:hover{color:var(--navy)}
+    .cart-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--navy);color:var(--navy);background:none;padding:9px 16px;border-radius:999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
+    .cart-btn:hover{background:var(--navy);color:#fff}
+    .cart-count{background:var(--gold);color:#fff;border-radius:999px;font-size:12px;min-width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+    @media(max-width:760px){nav.links{display:none}}
+
+    /* hero */
+    .hero{position:relative;height:82vh;min-height:520px;max-height:760px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;color:#fff}
+    .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+    .hero .veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(15,20,45,.55),rgba(15,20,45,.35) 40%,rgba(15,20,45,.72))}
+    .hero .in{position:relative;z-index:2;max-width:760px;padding:0 22px}
+    .hero .eyebrow{color:var(--gold-2)}
+    .hero h1{font-size:clamp(42px,7vw,74px);line-height:1.02;margin:16px 0 14px;font-weight:700;letter-spacing:.5px;text-shadow:0 2px 30px rgba(0,0,0,.35)}
+    .hero p{max-width:560px;margin:0 auto 26px;font-size:18px;color:#eef0f6}
+    .cta{display:inline-flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:13px 26px;border-radius:999px;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer;transition:.16s;border:1px solid transparent}
+    .btn.gold{background:var(--gold);color:#fff}
+    .btn.gold:hover{background:var(--gold-2)}
+    .btn.ghost{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.55);color:#fff}
+    .btn.ghost:hover{background:#fff;color:var(--navy)}
+    .scroll-cue{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.82);font-size:11px;letter-spacing:.18em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:5px;animation:bob 2s ease-in-out infinite}
+    .scroll-cue svg{width:20px;height:20px}
+    @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+
+    .trust{background:var(--navy);color:#eef0f6}
+    .trust .wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 46px;padding:20px 22px}
+    .trust span{font-size:13.5px;letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+    .trust b{color:var(--gold-2)}
+
+    section.block{padding:74px 0}
+    .head{text-align:center;max-width:640px;margin:0 auto 34px}
+    .head h2{font-size:clamp(30px,4.5vw,44px);color:var(--navy);font-weight:700;margin:12px 0 10px;line-height:1.08}
+    .head p{color:var(--ink-soft);font-size:16px;margin:0}
+
+    /* shop tools */
+    .shop-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .shop-tools select{font-family:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;outline:none}
+    .shop-tools select:focus{border-color:var(--navy)}
+    .shop-tools .count{margin-left:auto;font-size:13.5px;color:var(--muted)}
+    .shop-tools .count b{color:var(--navy)}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:24px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.18s;cursor:pointer}
+    .card:hover{transform:translateY(-3px);box-shadow:0 16px 40px -20px rgba(30,45,110,.4)}
+    .thumb{aspect-ratio:1/1;background:linear-gradient(135deg,#eef1fb,#f7f4ec);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+    .card:hover .thumb img{transform:scale(1.06)}
+    .thumb .view{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;opacity:0;transition:.2s;background:linear-gradient(to top,rgba(20,25,45,.4),transparent 45%)}
+    .card:hover .thumb .view{opacity:1}
+    .thumb .view span{color:#fff;font-size:12px;font-weight:600;letter-spacing:.03em;background:rgba(20,25,45,.5);padding:5px 12px;border-radius:999px}
+    .body{padding:16px 17px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .name{font-family:'Cormorant Garamond',Georgia,serif;font-size:23px;font-weight:600;color:var(--navy);line-height:1.1}
+    .attrs{font-size:13px;color:var(--muted)}
+    .cert{font-size:11px;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:5px}
+    .cert::before{content:"";width:6px;height:6px;border-radius:999px;background:var(--gold)}
+    .row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px}
+    .price{font-size:19px;font-weight:700;color:var(--ink)}
+    .add{border:none;background:var(--navy);color:#fff;padding:9px 15px;border-radius:999px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;transition:.15s}
+    .add:hover{background:var(--navy-2)}
+    .add.in{background:var(--gold)}
+    .add:disabled{opacity:.5;cursor:not-allowed}
+    .note{text-align:center;color:var(--muted);padding:50px 0}
+
+    #process{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px}
+    .step{position:relative;padding:26px 22px;border:1px solid var(--line);border-radius:14px;background:var(--ivory);transition:.18s}
+    .step:hover{border-color:var(--gold);transform:translateY(-3px)}
+    .step .no{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--gold);line-height:1}
+    .step h3{font-size:19px;color:var(--navy);margin:12px 0 8px}
+    .step p{font-size:14px;color:var(--ink-soft);margin:0}
+    .step .mod{display:inline-block;margin-top:12px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff}
+    .flowline{text-align:center;color:var(--muted);font-size:13.5px;margin-top:28px}
+    .flowline b{color:var(--navy)}
+
+    #about{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+    #about .txt h2{font-size:clamp(28px,4vw,40px);color:var(--navy);font-weight:700;margin:12px 0 14px;line-height:1.1}
+    #about .txt p{color:var(--ink-soft);margin:0 0 14px}
+    #about .art{border-radius:18px;overflow:hidden;aspect-ratio:4/3;background:linear-gradient(135deg,#e7ecfb,#f7f2e6);border:1px solid var(--line)}
+    #about .art img{width:100%;height:100%;object-fit:cover}
+    @media(max-width:820px){#about{grid-template-columns:1fr;gap:26px}}
+
+    /* overlay + drawers/modals */
+    .scrim{position:fixed;inset:0;background:rgba(20,25,45,.5);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+    .scrim.open{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;right:0;height:100%;width:400px;max-width:92vw;background:var(--ivory);z-index:60;transform:translateX(100%);transition:.24s ease;display:flex;flex-direction:column;box-shadow:-20px 0 50px -30px rgba(0,0,0,.6)}
+    .drawer.open{transform:none}
+    .dhead{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--line)}
+    .dhead h2{margin:0;font-size:22px;color:var(--navy)}
+    .x{border:none;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted)}
+    .ditems{flex:1;overflow-y:auto;padding:10px 22px}
+    .item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+    .item img{width:52px;height:52px;border-radius:9px;object-fit:cover;background:#eef1fb}
+    .item .in{flex:1}
+    .item .rm{border:none;background:none;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline}
+    .dfoot{border-top:1px solid var(--line);padding:18px 22px;background:#fff}
+    .tot{display:flex;justify-content:space-between;font-weight:700;font-size:17px;margin-bottom:14px}
+    .field{margin-bottom:10px}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    .field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:14px;background:#fff}
+    .field input:focus{outline:none;border-color:var(--navy)}
+    .place{width:100%;border:none;background:var(--navy);color:#fff;padding:13px;border-radius:10px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer}
+    .place:hover{background:var(--navy-2)}
+    .place:disabled{opacity:.5;cursor:not-allowed}
+    .msg{padding:11px 13px;border-radius:9px;font-size:14px;margin-bottom:12px}
+    .msg.ok{background:#e7f5ee;color:#1c6b45;border:1px solid #b9e2cd}
+    .msg.err{background:#fdecec;color:#a02323;border:1px solid #f3c4c4}
+    .empty-cart{text-align:center;color:var(--muted);padding:50px 10px}
+
+    /* product detail modal */
+    .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:760px;max-width:94vw;max-height:90vh;overflow-y:auto;background:var(--ivory);border-radius:18px;z-index:60;opacity:0;pointer-events:none;transition:.22s;box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
+    .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+    .modal .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .modal .pic{aspect-ratio:1/1;background:linear-gradient(135deg,#eef1fb,#f7f4ec);overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .modal .pic img{width:100%;height:100%;object-fit:cover}
+    .modal .info{padding:28px 30px;position:relative}
+    .modal .info .x{position:absolute;top:14px;right:16px}
+    .modal .info h2{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--navy);margin:8px 0 4px;line-height:1.05}
+    .modal .info .p-attrs{color:var(--muted);font-size:14px;margin-bottom:16px}
+    .modal .spec{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:14px}
+    .modal .spec span:first-child{color:var(--muted)}
+    .modal .spec span:last-child{font-weight:600;text-align:right}
+    .modal .p-price{font-size:26px;font-weight:700;color:var(--ink);margin:18px 0}
+    @media(max-width:680px){.modal .grid2{grid-template-columns:1fr}.modal .pic{aspect-ratio:16/10}}
+
+    footer{border-top:1px solid var(--line);padding:40px 0 30px;background:#fff}
+    .fcols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;margin-bottom:24px}
+    .fcols .brand{font-size:24px}
+    .fcols p{color:var(--muted);font-size:13.5px;max-width:280px;margin:10px 0 0}
+    .fcols nav{display:flex;flex-direction:column;gap:8px}
+    .fcols nav a{color:var(--ink-soft);font-size:14px;font-weight:500}
+    .fcols nav a:hover{color:var(--navy)}
+    .fcols h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+    .fbot{border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:13px;text-align:center}
+    .fbot a{color:var(--navy);font-weight:600}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <a href="#top" class="brand serif">Serendib Gems<small>Ceylon Fine Gemstones</small></a>
+      <nav class="links">
+        <a href="#collection">Collection</a>
+        <a href="#process">Our Process</a>
+        <a href="#about">About</a>
+      </nav>
+      <button class="cart-btn" id="cartBtn">Enquiry <span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <video autoplay muted loop playsinline poster="images/kashmir-sapphire.png">
+      <source src="herovid.mp4" type="video/mp4">
+    </video>
+    <div class="veil"></div>
+    <div class="in">
+      <div class="eyebrow">Direct from Sri Lanka</div>
+      <h1 class="serif">Rare stones,<br>honestly certified.</h1>
+      <p>Sourced, cut and graded in our own workshop. Every gem is held in our vault with its own certificate. Reserve the ones you like and our team finishes the sale with you.</p>
+      <div class="cta">
+        <a class="btn gold" href="#collection">Explore the collection</a>
+        <a class="btn ghost" href="#process">How we work</a>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#collection">Scroll
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <div class="trust">
+    <div class="wrap">
+      <span><b>◆</b> Independently lab certified</span>
+      <span><b>◆</b> Mined &amp; cut in Sri Lanka</span>
+      <span><b>◆</b> Held in an insured vault</span>
+      <span><b>◆</b> Every stone traceable by lot code</span>
+    </div>
+  </div>
+
+  <section class="block wrap" id="collection">
+    <div class="head">
+      <div class="eyebrow">The Collection</div>
+      <h2 class="serif">Finished gems, ready to reserve</h2>
+      <p>These are live from our vault. When you reserve a stone it is held for you at once, and our sales team is notified to confirm the sale.</p>
+    </div>
+
+    <div class="shop-tools" id="tools" style="display:none">
+      <select id="fType"><option value="">All gem types</option></select>
+      <select id="fSort">
+        <option value="price-desc">Price: high to low</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="name">Name (A–Z)</option>
+      </select>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="note" id="note" style="display:none"></div>
+  </section>
+
+  <section class="block" id="process">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">From mine to hand</div>
+        <h2 class="serif">Our process, step by step</h2>
+        <p>Every stone travels the same five stages. Behind the scenes each stage is one part of the same system, so a gem is never lost between the mine and your hand.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="no">01</div><h3>Sourcing</h3><p>We buy rough stones straight from trusted miners in Ratnapura and Elahera. Each parcel is logged the day it arrives.</p><span class="mod">Procurement</span></div>
+        <div class="step"><div class="no">02</div><h3>Cutting &amp; grading</h3><p>Our master cutters shape every stone by hand, then grade it for colour, clarity, cut and carat.</p><span class="mod">Workshop</span></div>
+        <div class="step"><div class="no">03</div><h3>Certify &amp; vault</h3><p>Finished gems go for independent lab certification and are held in our insured vault, each with its own lot code.</p><span class="mod">Inventory</span></div>
+        <div class="step"><div class="no">04</div><h3>Reserve &amp; confirm</h3><p>You reserve the stones you like here. Our sales team contacts you to confirm details and finish the order.</p><span class="mod">Sales</span></div>
+        <div class="step"><div class="no">05</div><h3>Billing &amp; handover</h3><p>We issue a clear invoice and arrange insured delivery, or a private handover at our Colombo office.</p><span class="mod">Billing</span></div>
+      </div>
+      <div class="flowline">One stone, one journey: <b>Rough</b> &rarr; <b>In cutting</b> &rarr; <b>Finished</b> &rarr; <b>Reserved</b> &rarr; <b>Sold</b>.</div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="about">
+    <div class="txt">
+      <div class="eyebrow">About Serendib</div>
+      <h2 class="serif">A gem house that keeps its own record</h2>
+      <p>Serendib Gems is a family gem house in Colombo. For years the buying, cutting and selling were tracked on paper and in scattered spreadsheets, and stones were easy to lose track of.</p>
+      <p>Today everything runs on one connected system. The moment a rough stone is bought it gets a lot code, and that same record follows it through cutting, the vault, your reservation and the final invoice. That is how we can promise every gem here is real, certified and truly ours to sell.</p>
+      <a class="btn gold" href="#collection" style="margin-top:6px">See what is in the vault</a>
+    </div>
+    <div class="art"><img src="images/star-sapphire.png" alt="Ceylon gemstone" onerror="this.parentNode.style.display='none'"></div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="fcols">
+        <div>
+          <div class="brand serif">Serendib Gems<small>Ceylon Fine Gemstones</small></div>
+          <p>Fine Sri Lankan gemstones, sourced, cut and certified in-house. Colombo, Sri Lanka.</p>
+        </div>
+        <div><h4>Explore</h4><nav><a href="#collection">Collection</a><a href="#process">Our Process</a><a href="#about">About</a></nav></div>
+        <div><h4>Contact</h4><nav><a href="mailto:hello@serendibgems.lk">hello@serendibgems.lk</a><a href="tel:+94112000000">+94 11 200 0000</a><a href="/">Staff / ERP admin</a></nav></div>
+      </div>
+      <div class="fbot">© 2026 Serendib Gems. This is the customer shop. Staff sign in to the <a href="/">ERP admin</a>.</div>
+    </div>
+  </footer>
+
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="drawer" id="drawer" aria-label="Enquiry">
+    <div class="dhead"><h2 class="serif">Your enquiry</h2><button class="x" id="closeCart">&times;</button></div>
+    <div class="ditems" id="ditems"></div>
+    <div class="dfoot" id="dfoot"></div>
+  </aside>
+
+  <div class="modal" id="detail" aria-label="Gem details"></div>
+
+  <script>
+    var money = function(n){ return 'Rs ' + Number(n||0).toLocaleString(); };
+    var state = { lots: [], cart: [], type: '', sort: 'price-desc' };
+
+    function attrs(l){ return [l.gem_type, l.carat ? l.carat + ' ct' : null, l.origin].filter(Boolean).join(' · '); }
+    function imgTag(l){
+      if(!l.image_url) return '<div style="color:#b8bcc9;font-size:12px">No image</div>';
+      return '<img src="'+l.image_url+'" alt="'+l.name+'" onerror="this.style.display=\'none\'">';
+    }
+
+    function loadLots(){
+      fetch('/api/shop/lots').then(function(r){ return r.json(); }).then(function(lots){
+        state.lots = lots; buildTypeOptions(); renderGrid();
+      }).catch(function(){
+        document.getElementById('note').style.display='block';
+        document.getElementById('note').textContent='Could not load the shop right now. Please try again shortly.';
+      });
+    }
+
+    function buildTypeOptions(){
+      var types = [];
+      state.lots.forEach(function(l){ if(l.gem_type && types.indexOf(l.gem_type)<0) types.push(l.gem_type); });
+      types.sort();
+      var sel = document.getElementById('fType');
+      sel.innerHTML = '<option value="">All gem types</option>' + types.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+      sel.value = state.type;
+    }
+
+    function visibleLots(){
+      var list = state.lots.filter(function(l){ return !state.type || l.gem_type === state.type; });
+      if(state.sort === 'price-asc') list.sort(function(a,b){ return (a.sale_price||0)-(b.sale_price||0); });
+      else if(state.sort === 'name') list.sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); });
+      else list.sort(function(a,b){ return (b.sale_price||0)-(a.sale_price||0); });
+      return list;
+    }
+
+    function renderGrid(){
+      var grid = document.getElementById('grid');
+      var note = document.getElementById('note');
+      var tools = document.getElementById('tools');
+      if(!state.lots.length){
+        grid.innerHTML=''; tools.style.display='none'; note.style.display='block';
+        note.textContent='No gems are available to reserve right now. Please check back soon.';
+        return;
+      }
+      tools.style.display='flex';
+      var list = visibleLots();
+      document.getElementById('count').innerHTML = '<b>'+list.length+'</b> gem'+(list.length===1?'':'s');
+      if(!list.length){
+        grid.innerHTML=''; note.style.display='block'; note.textContent='No gems match this filter. Try another type.';
+        return;
+      }
+      note.style.display='none';
+      grid.innerHTML = list.map(function(l){
+        var inCart = state.cart.indexOf(l.lot_id) >= 0;
+        return '<div class="card" data-open="'+l.lot_id+'">'
+          + '<div class="thumb">'+imgTag(l)+'<div class="view"><span>View details</span></div></div>'
+          + '<div class="body">'
+          + (l.cert_lab ? '<div class="cert">'+l.cert_lab+(l.cert_no?' · '+l.cert_no:'')+'</div>' : '<div class="cert">Certified</div>')
+          + '<div class="name">'+l.name+'</div>'
+          + '<div class="attrs">'+attrs(l)+'</div>'
+          + '<div class="row"><span class="price">'+money(l.sale_price)+'</span>'
+          + '<button class="add'+(inCart?' in':'')+'" data-id="'+l.lot_id+'">'+(inCart?'Added':'Reserve')+'</button></div>'
+          + '</div></div>';
+      }).join('');
+      Array.prototype.forEach.call(grid.querySelectorAll('.add'), function(btn){
+        btn.onclick = function(e){ e.stopPropagation(); toggleCart(Number(btn.getAttribute('data-id'))); };
+      });
+      Array.prototype.forEach.call(grid.querySelectorAll('.card'), function(card){
+        card.onclick = function(){ openDetail(Number(card.getAttribute('data-open'))); };
+      });
+    }
+
+    document.getElementById('fType').onchange = function(e){ state.type = e.target.value; renderGrid(); };
+    document.getElementById('fSort').onchange = function(e){ state.sort = e.target.value; renderGrid(); };
+
+    /* product detail modal */
+    function lotById(id){ for(var i=0;i<state.lots.length;i++){ if(state.lots[i].lot_id===id) return state.lots[i]; } return null; }
+    function spec(label, val){ return val ? '<div class="spec"><span>'+label+'</span><span>'+val+'</span></div>' : ''; }
+    function openDetail(id){
+      var l = lotById(id); if(!l) return;
+      var inCart = state.cart.indexOf(l.lot_id) >= 0;
+      document.getElementById('detail').innerHTML =
+        '<div class="grid2"><div class="pic">'+imgTag(l)+'</div>'
+        + '<div class="info"><button class="x" id="closeDetail">&times;</button>'
+        + (l.cert_lab ? '<div class="cert">'+l.cert_lab+(l.cert_no?' · '+l.cert_no:'')+'</div>' : '<div class="cert">Certified</div>')
+        + '<h2>'+l.name+'</h2>'
+        + '<div class="p-attrs">'+attrs(l)+'</div>'
+        + spec('Lot code', l.lot_code)
+        + spec('Gem type', l.gem_type)
+        + spec('Colour', l.color)
+        + spec('Carat', l.carat ? l.carat + ' ct' : '')
+        + spec('Cut', l.cut)
+        + spec('Clarity', l.clarity)
+        + spec('Origin', l.origin)
+        + spec('Treatment', l.treatment)
+        + spec('Certificate', l.cert_lab ? (l.cert_lab + (l.cert_no ? ' · ' + l.cert_no : '')) : '')
+        + '<div class="p-price">'+money(l.sale_price)+'</div>'
+        + '<button class="place" id="detailAdd" style="width:auto;padding:12px 26px">'+(inCart?'Added to enquiry ✓':'Reserve this gem')+'</button>'
+        + '</div></div>';
+      document.getElementById('scrim').classList.add('open');
+      document.getElementById('detail').classList.add('open');
+      document.getElementById('closeDetail').onclick = closeDetail;
+      document.getElementById('detailAdd').onclick = function(){ toggleCart(l.lot_id); openDetail(l.lot_id); };
+    }
+    function closeDetail(){
+      document.getElementById('detail').classList.remove('open');
+      if(!document.getElementById('drawer').classList.contains('open')) document.getElementById('scrim').classList.remove('open');
+    }
+
+    function toggleCart(id){
+      var i = state.cart.indexOf(id);
+      if(i>=0) state.cart.splice(i,1); else state.cart.push(id);
+      renderGrid(); renderCart();
+      document.getElementById('cartCount').textContent = state.cart.length;
+    }
+
+    function cartLots(){ return state.lots.filter(function(l){ return state.cart.indexOf(l.lot_id)>=0; }); }
+
+    function renderCart(){
+      var items = document.getElementById('ditems');
+      var foot = document.getElementById('dfoot');
+      var chosen = cartLots();
+      document.getElementById('cartCount').textContent = state.cart.length;
+      if(!chosen.length){
+        items.innerHTML = '<div class="empty-cart">Nothing reserved yet.<br>Tap “Reserve” on a gem you like.</div>';
+        foot.innerHTML=''; return;
+      }
+      items.innerHTML = chosen.map(function(l){
+        return '<div class="item">'+imgTag(l)+'<div class="in"><strong>'+l.name+'</strong><div class="attrs">'+attrs(l)+'</div></div>'
+          + '<div style="text-align:right"><div>'+money(l.sale_price)+'</div><button class="rm" data-id="'+l.lot_id+'">remove</button></div></div>';
+      }).join('');
+      var total = chosen.reduce(function(s,l){ return s + Number(l.sale_price||0); }, 0);
+      foot.innerHTML = '<div class="tot"><span>Total</span><span>'+money(total)+'</span></div>'
+        + '<div id="formMsg"></div>'
+        + '<div class="field"><label>Your name *</label><input id="fName" required></div>'
+        + '<div class="field"><label>Email</label><input id="fEmail" type="email"></div>'
+        + '<div class="field"><label>Phone</label><input id="fPhone"></div>'
+        + '<div class="field"><label>Address</label><input id="fAddress"></div>'
+        + '<button class="place" id="placeBtn">Place enquiry</button>';
+      Array.prototype.forEach.call(items.querySelectorAll('.rm'), function(b){
+        b.onclick = function(){ toggleCart(Number(b.getAttribute('data-id'))); };
+      });
+      document.getElementById('placeBtn').onclick = placeOrder;
+    }
+
+    function placeOrder(){
+      var name = document.getElementById('fName').value.trim();
+      var msg = document.getElementById('formMsg');
+      msg.innerHTML='';
+      if(!name){ msg.innerHTML='<div class="msg err">Please enter your name.</div>'; return; }
+      var btn = document.getElementById('placeBtn');
+      btn.disabled = true; btn.textContent = 'Sending...';
+      fetch('/api/shop/orders', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          customer:{ name:name, email:document.getElementById('fEmail').value.trim(),
+            phone:document.getElementById('fPhone').value.trim(), address:document.getElementById('fAddress').value.trim() },
+          lot_ids: state.cart.slice()
+        })
+      }).then(function(r){ return r.json().then(function(d){ return { ok:r.ok, d:d }; }); })
+      .then(function(res){
+        if(!res.ok){ throw new Error(res.d.error || 'Something went wrong'); }
+        state.cart = [];
+        document.getElementById('ditems').innerHTML =
+          '<div class="msg ok" style="margin:16px 0">Thank you! Your enquiry <strong>#'+res.d.order_id+'</strong> is in. Our team will contact you to confirm. The gems are now reserved for you.</div>';
+        document.getElementById('dfoot').innerHTML='';
+        document.getElementById('cartCount').textContent = 0;
+        loadLots();
+      })
+      .catch(function(e){
+        msg.innerHTML='<div class="msg err">'+e.message+'</div>';
+        btn.disabled=false; btn.textContent='Place enquiry';
+      });
+    }
+
+    function openCart(){ document.getElementById('scrim').classList.add('open'); document.getElementById('drawer').classList.add('open'); renderCart(); }
+    function closeCart(){ document.getElementById('drawer').classList.remove('open'); if(!document.getElementById('detail').classList.contains('open')) document.getElementById('scrim').classList.remove('open'); }
+    document.getElementById('cartBtn').onclick = openCart;
+    document.getElementById('closeCart').onclick = closeCart;
+    document.getElementById('scrim').onclick = function(){ closeCart(); closeDetail(); };
+
+    loadLots();
+  </script>
+</body>
+</html>

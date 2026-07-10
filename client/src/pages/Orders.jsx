@@ -3,6 +3,7 @@ import { api } from '../api.js';
 import { Plus, Close } from '../icons.jsx';
 
 const money = (n) => 'Rs ' + Number(n || 0).toLocaleString();
+const fmtDate = (d) => { if (!d) return '-'; const t = new Date(String(d).slice(0, 10)); return isNaN(t) ? String(d).slice(0, 10) : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
 function orderBadge(s) {
   if (s === 'Confirmed') return 'badge finished';
   if (s === 'Cancelled') return 'badge sold';
@@ -17,6 +18,7 @@ export default function Orders() {
   const [finishedLots, setFinishedLots] = useState([]);
   const [error, setError] = useState('');
   const [form, setForm] = useState(null);
+  const [channelFilter, setChannelFilter] = useState('');
 
   async function load() {
     try {
@@ -45,11 +47,20 @@ export default function Orders() {
   }
 
   const chosenTotal = form ? finishedLots.filter((l) => form.lot_ids.includes(l.lot_id)).reduce((s, l) => s + Number(l.sale_price || 0), 0) : 0;
+  const shown = channelFilter ? rows.filter((r) => r.channel === channelFilter) : rows;
+  const onlineWaiting = rows.filter((r) => r.channel === 'Online' && r.status === 'Draft').length;
 
   return (
     <div>
+      <div className="section-title"><h2>Orders</h2><span className="sub">Sales orders and confirmations</span></div>
       {error && <div className="msg err">{error}</div>}
+      {onlineWaiting > 0 && <div className="msg warn">{onlineWaiting} online order{onlineWaiting > 1 ? 's' : ''} from the shop waiting to be confirmed.</div>}
       <div className="toolbar">
+        <select className="input" style={{ width: 'auto' }} value={channelFilter} onChange={(e) => setChannelFilter(e.target.value)}>
+          <option value="">All channels</option>
+          <option value="Online">Online shop</option>
+          <option value="WalkIn">Walk-in</option>
+        </select>
         <span className="sub" style={{ color: 'var(--muted)' }}>Selling a lot reserves it, then marks it sold on confirm.</span>
         <div className="spacer" />
         <button className="btn btn-primary" onClick={openNew}><Plus width={16} height={16} /> New order</button>
@@ -59,14 +70,16 @@ export default function Orders() {
         <table>
           <thead><tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Channel</th><th>Status</th><th></th></tr></thead>
           <tbody>
-            {rows.map((r) => (
+            {shown.map((r) => (
               <tr key={r.order_id}>
                 <td className="tab-num">{r.order_id}</td>
                 <td>{r.customer_name}</td>
-                <td className="tab-num">{String(r.order_date).slice(0, 10)}</td>
+                <td className="tab-num">{fmtDate(r.order_date)}</td>
                 <td className="tab-num">{r.item_count}</td>
                 <td className="tab-num">{money(r.total_amount)}</td>
-                <td>{r.channel}</td>
+                <td>{r.channel === 'Online'
+                  ? <span className="badge" style={{ background: 'rgba(176,141,62,.14)', color: 'var(--gold)', border: '1px solid rgba(176,141,62,.3)' }}>Online shop</span>
+                  : <span style={{ color: 'var(--muted)' }}>Walk-in</span>}</td>
                 <td><span className={orderBadge(r.status)}>{r.status}</span></td>
                 <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   {r.status === 'Draft' && <>
@@ -76,7 +89,7 @@ export default function Orders() {
                 </td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={8}><div className="empty">No orders yet.</div></td></tr>}
+            {shown.length === 0 && <tr><td colSpan={8}><div className="empty">No orders to show.</div></td></tr>}
           </tbody>
         </table>
       </div>
@@ -99,7 +112,7 @@ export default function Orders() {
                   <label>Channel</label>
                   <select className="input" value={form.channel} onChange={(e) => setForm({ ...form, channel: e.target.value })}>
                     <option value="WalkIn">Walk in</option>
-                    <option value="Storefront">Storefront</option>
+                    <option value="Online">Online shop</option>
                   </select>
                 </div>
               </div>
