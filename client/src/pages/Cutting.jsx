@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { Plus, Close, Chisel } from '../icons.jsx';
 
+const fmtDate = (d) => { if (!d) return '-'; const t = new Date(String(d).slice(0, 10)); return isNaN(t) ? String(d).slice(0, 10) : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+
 function jobBadge(s) {
   if (s === 'Done') return 'badge finished';
   if (s === 'In Progress') return 'badge cutting';
@@ -16,6 +18,7 @@ export default function Cutting() {
   const [cutters, setCutters] = useState([]);
   const [error, setError] = useState('');
   const [form, setForm] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
 
   async function load() {
     try {
@@ -40,12 +43,35 @@ export default function Cutting() {
     catch (e) { setError(e.message); }
   }
 
+  const shown = statusFilter ? jobs.filter((j) => j.status === statusFilter) : jobs;
+
+  // count of jobs still open (not Done) per cutter, for the workload strip
+  const workload = {};
+  jobs.forEach((j) => { if (j.status !== 'Done' && j.cutter_name) workload[j.cutter_name] = (workload[j.cutter_name] || 0) + 1; });
+  const workloadList = Object.entries(workload).sort((a, b) => b[1] - a[1]);
+
   return (
     <div>
       <div className="section-title"><h2>Cutting & Workshop</h2><span className="sub">{jobs.length} jobs</span></div>
       {error && <div className="msg err">{error}</div>}
 
+      {workloadList.length > 0 && (
+        <div className="card pad" style={{ marginBottom: 14 }}>
+          <div className="k" style={{ marginBottom: 8 }}>Cutter workload (open jobs)</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {workloadList.map(([name, n]) => (
+              <span key={name} className="badge cutting">{name}: {n}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="toolbar">
+        <select className="input" style={{ width: 'auto' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="">All jobs</option>
+          <option value="In Progress">In progress</option>
+          <option value="Done">Done</option>
+        </select>
         <span className="sub" style={{ color: 'var(--muted)' }}>Turn a rough lot into a finished lot.</span>
         <div className="spacer" />
         <button className="btn btn-primary" onClick={() => { setError(''); setForm({ lot_id: '', cutter_id: '', notes: '' }); }}><Plus width={16} height={16} /> New cutting job</button>
@@ -55,20 +81,20 @@ export default function Cutting() {
         <table>
           <thead><tr><th>ID</th><th>Lot</th><th>Cutter</th><th>Start</th><th>End</th><th>Status</th><th></th></tr></thead>
           <tbody>
-            {jobs.map((j) => (
+            {shown.map((j) => (
               <tr key={j.job_id}>
                 <td className="tab-num">{j.job_id}</td>
                 <td><strong style={{ color: 'var(--ink)' }}>{j.lot_code}</strong> {j.lot_name}</td>
                 <td>{j.cutter_name || '-'}</td>
-                <td className="tab-num">{j.start_date ? String(j.start_date).slice(0, 10) : '-'}</td>
-                <td className="tab-num">{j.end_date ? String(j.end_date).slice(0, 10) : '-'}</td>
+                <td className="tab-num">{fmtDate(j.start_date)}</td>
+                <td className="tab-num">{fmtDate(j.end_date)}</td>
                 <td><span className={jobBadge(j.status)}>{j.status}</span></td>
                 <td style={{ textAlign: 'right' }}>
                   {j.status !== 'Done' && <button className="btn btn-sm" onClick={() => complete(j)}>Mark finished</button>}
                 </td>
               </tr>
             ))}
-            {jobs.length === 0 && <tr><td colSpan={7}><div className="empty">No cutting jobs yet.</div></td></tr>}
+            {shown.length === 0 && <tr><td colSpan={7}><div className="empty">No cutting jobs to show.</div></td></tr>}
           </tbody>
         </table>
       </div>
