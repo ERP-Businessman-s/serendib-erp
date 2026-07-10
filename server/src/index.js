@@ -24,11 +24,18 @@ app.use('/api/customers', require('./routes/customers')); // Sales (customers)
 app.use('/api/orders', require('./routes/orders'));       // Sales (orders -> reserve/sell)
 app.use('/api/invoices', require('./routes/invoices'));   // Billing
 app.use('/api/employees', require('./routes/employees')); // HR
+app.use('/api/shop', require('./routes/shop'));           // Public storefront (no login)
 
 // Simple health check
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-// ---- Serve the built React app ----
+// ---- Serve the public storefront at /shop ----
+// This is the customer facing gem shop. It is plain static files, and it talks to
+// the public /api/shop endpoints. Registered before the React app so /shop wins.
+const storefrontDir = path.join(__dirname, '..', '..', 'storefront');
+app.use('/shop', express.static(storefrontDir));
+
+// ---- Serve the built React admin app ----
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
 app.use(express.static(clientDist));
 // Anything that is not /api goes to the React app so client side routing works.
