@@ -4,10 +4,18 @@ An Enterprise Resource Planning (ERP) system for a Sri Lankan gem house, built a
 
 ## Live demo
 
-- **ERP system:** https://serendib-erp-group5-a2htbtbzgmfqfebc.southeastasia-01.azurewebsites.net
-- **Public storefront:** https://serendib-erp-group5-a2htbtbzgmfqfebc.southeastasia-01.azurewebsites.net/shop
+- **ERP system:** https://serendib-erp-g5-ccf4ghfbebh6hhbs.southeastasia-01.azurewebsites.net
+- **Public storefront:** https://serendib-erp-g5-ccf4ghfbebh6hhbs.southeastasia-01.azurewebsites.net/shop
 
-> The app runs on Azure. The first request after it has been idle can take around 30 seconds to wake up (free tier plus a serverless database), then it is fast.
+**Demo login** (staff back-office):
+
+| Email | Password |
+|-------|----------|
+| `admin@serendib.lk` | `Admin@2026` |
+
+The public storefront needs no login.
+
+> The app runs on Azure. The first request after it has been idle can take around 30 seconds to wake up (free App Service tier), then it is fast.
 
 ## What this system is
 
